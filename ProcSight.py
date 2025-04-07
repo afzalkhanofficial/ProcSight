@@ -133,3 +133,31 @@ class MainWindow(QMainWindow):
         # Configure pyqtgraph for a matching dark theme
         pg.setConfigOption("background", "#262626")
         pg.setConfigOption("foreground", "#E0E0E0")
+
+    ############################################################################
+    # 2.1. Set Fusion Style and Custom Dark Palette
+    ############################################################################
+    def initAppStyle(self):
+        app.setStyle("Fusion")
+        darkPalette = QPalette()
+        darkPalette.setColor(QPalette.Window, QColor(36, 36, 36))
+        darkPalette.setColor(QPalette.WindowText, Qt.white)
+        darkPalette.setColor(QPalette.Base, QColor(45, 45, 45))
+        darkPalette.setColor(QPalette.AlternateBase, QColor(36, 36, 36))
+        darkPalette.setColor(QPalette.ToolTipBase, Qt.white)
+        darkPalette.setColor(QPalette.ToolTipText, Qt.white)
+        darkPalette.setColor(QPalette.Text, Qt.white)
+        darkPalette.setColor(QPalette.Button, QColor(45, 45, 45))
+        darkPalette.setColor(QPalette.ButtonText, Qt.white)
+        darkPalette.setColor(QPalette.BrightText, Qt.red)
+        darkPalette.setColor(QPalette.Highlight, QColor("#0078d4"))
+        darkPalette.setColor(QPalette.HighlightedText, Qt.white)
+        app.setPalette(darkPalette)
+
+    def applyShadow(self, widget):
+        shadow = QGraphicsDropShadowEffect()
+        shadow.setBlurRadius(25)
+        shadow.setXOffset(0)
+        shadow.setYOffset(0)
+        shadow.setColor(QColor(0, 0, 0, 160))
+        widget.setGraphicsEffect(shadow)
