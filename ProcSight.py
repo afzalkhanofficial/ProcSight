@@ -535,3 +535,32 @@ class MainWindow(QMainWindow):
             self.gpuData.pop(0)
         self.gpuCurve.setData(self.gpuData)
         self.gpuLabel_Usage.setText(f"Usage: {dummy_gpu:.1f}%")
+
+    ############################################################################
+    # 2.4. Process Termination (Context Menu)
+    ############################################################################
+    def openContextMenu(self, pos):
+        index = self.tableView.indexAt(pos)
+        if not index.isValid():
+            return
+        source_index = self.proxyModel.mapToSource(index)
+        row = source_index.row()
+        try:
+            pid = int(self.processModel.processes[row][0])
+        except (IndexError, ValueError):
+            return
+
+        menu = QMenu()
+        killAction = menu.addAction("Terminate Process")
+        action = menu.exec_(self.tableView.viewport().mapToGlobal(pos))
+        if action == killAction:
+            self.terminateProcess(pid)
+
+    def terminateProcess(self, pid):
+        try:
+            psutil.Process(pid).terminate()
+            QMessageBox.information(self, "Process Terminated",
+                                    f"Process {pid} terminated successfully.")
+        except Exception as e:
+            QMessageBox.warning(self, "Error",
+                                f"Failed to terminate process {pid}.\nError: {e}")
