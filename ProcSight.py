@@ -161,3 +161,77 @@ class MainWindow(QMainWindow):
         shadow.setYOffset(0)
         shadow.setColor(QColor(0, 0, 0, 160))
         widget.setGraphicsEffect(shadow)
+
+    ############################################################################
+    # 2.2. Pages: Processes + Performance (Tabbed)
+    ############################################################################
+    def createProcessesPage(self):
+        page = QWidget()
+        page_layout = QVBoxLayout(page)
+        page_layout.setContentsMargins(20, 20, 20, 20)
+
+        # Filter row
+        filter_layout = QHBoxLayout()
+        filter_label = QLabel("Filter Processes:")
+        filter_label.setFont(QFont("Segoe UI Variable", 11, QFont.Medium))
+        self.filterLineEdit = QLineEdit()
+        self.filterLineEdit.setPlaceholderText("Type a process name...")
+        self.filterLineEdit.textChanged.connect(self.filterChanged)
+        filter_layout.addWidget(filter_label)
+        filter_layout.addWidget(self.filterLineEdit)
+        filter_layout.addStretch()
+        page_layout.addLayout(filter_layout)
+
+        # Process Table
+        self.processModel = ProcessTableModel([])
+        self.proxyModel = QSortFilterProxyModel()
+        self.proxyModel.setSourceModel(self.processModel)
+        self.proxyModel.setFilterKeyColumn(1)
+        self.proxyModel.setFilterCaseSensitivity(Qt.CaseInsensitive)
+
+        self.tableView = QTableView()
+        self.tableView.setModel(self.proxyModel)
+        self.tableView.setSortingEnabled(True)
+        self.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.tableView.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.tableView.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.tableView.customContextMenuRequested.connect(self.openContextMenu)
+        page_layout.addWidget(self.tableView)
+
+        return page
+
+    def createPerformancePage(self):
+        """
+        Create a Performance page with tabs for CPU, Memory, Disk, Network, GPU.
+        Each tab has a PyQtGraph chart + a details panel.
+        """
+        performanceWidget = QWidget()
+        layout = QVBoxLayout(performanceWidget)
+        layout.setContentsMargins(0, 0, 0, 0)
+
+        # QTabWidget to hold resource tabs
+        self.perfTabs = QTabWidget()
+        self.perfTabs.setObjectName("PerfTabs")
+        layout.addWidget(self.perfTabs)
+
+        # CPU tab
+        self.cpuTab = self.createCpuTab()
+        self.perfTabs.addTab(self.cpuTab, "CPU")
+
+        # Memory tab
+        self.memoryTab = self.createMemoryTab()
+        self.perfTabs.addTab(self.memoryTab, "Memory")
+
+        # Disk tab
+        self.diskTab = self.createDiskTab()
+        self.perfTabs.addTab(self.diskTab, "Disk")
+
+        # Network tab
+        self.networkTab = self.createNetworkTab()
+        self.perfTabs.addTab(self.networkTab, "Network")
+
+        # GPU tab (placeholder)
+        self.gpuTab = self.createGpuTab()
+        self.perfTabs.addTab(self.gpuTab, "GPU")
+
+        return performanceWidget
