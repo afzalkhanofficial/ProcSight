@@ -235,3 +235,193 @@ class MainWindow(QMainWindow):
         self.perfTabs.addTab(self.gpuTab, "GPU")
 
         return performanceWidget
+
+    ############################################################################
+    # 2.2.1. Individual Resource Tabs (CPU, Memory, Disk, Network, GPU)
+    ############################################################################
+    def createCpuTab(self):
+        cpuWidget = QWidget()
+        layout = QHBoxLayout(cpuWidget)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(20)
+
+        # Left: CPU Graph
+        self.cpuPlot = pg.PlotWidget(title="CPU Usage (Last 60s)")
+        self.cpuPlot.showGrid(x=True, y=True, alpha=0.2)
+        self.cpuPlot.setYRange(0, 100)
+        self.cpuPlot.setLabel("left", "Usage (%)")
+        self.cpuPlot.setLabel("bottom", "Time (s)")
+        pen = pg.mkPen(color="#0078D4", width=2)
+        self.cpuCurve = self.cpuPlot.plot(pen=pen, name="CPU")
+        self.cpuCurve.setFillLevel(0)
+        self.cpuCurve.setBrush(pg.mkBrush("#0078D420"))
+        layout.addWidget(self.cpuPlot, stretch=2)
+
+        # Right: CPU Info Panel
+        infoPanel = QWidget()
+        infoLayout = QVBoxLayout(infoPanel)
+        infoPanel.setFixedWidth(220)
+
+        self.cpuLabel_Usage = QLabel("Usage: 0.0%")
+        self.cpuLabel_Speed = QLabel("Speed: ??? GHz")
+        self.cpuLabel_Cores = QLabel("Cores: ???")
+        self.cpuLabel_Threads = QLabel("Threads: ???")
+
+        for lbl in [self.cpuLabel_Usage, self.cpuLabel_Speed,
+                    self.cpuLabel_Cores, self.cpuLabel_Threads]:
+            lbl.setStyleSheet("font-size: 12px; margin-bottom: 6px;")
+            infoLayout.addWidget(lbl)
+
+        infoLayout.addStretch()
+        layout.addWidget(infoPanel, stretch=1)
+
+        return cpuWidget
+
+    def createMemoryTab(self):
+        memWidget = QWidget()
+        layout = QHBoxLayout(memWidget)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(20)
+
+        # Left: Memory Graph
+        self.memPlot = pg.PlotWidget(title="Memory Usage (Last 60s)")
+        self.memPlot.showGrid(x=True, y=True, alpha=0.2)
+        self.memPlot.setYRange(0, 100)
+        self.memPlot.setLabel("left", "Usage (%)")
+        self.memPlot.setLabel("bottom", "Time (s)")
+        pen = pg.mkPen(color="#009966", width=2)
+        self.memCurve = self.memPlot.plot(pen=pen, name="Memory")
+        self.memCurve.setFillLevel(0)
+        self.memCurve.setBrush(pg.mkBrush("#00996620"))
+        layout.addWidget(self.memPlot, stretch=2)
+
+        # Right: Memory Info
+        infoPanel = QWidget()
+        infoLayout = QVBoxLayout(infoPanel)
+        infoPanel.setFixedWidth(220)
+
+        self.memLabel_Usage = QLabel("Usage: 0.0%")
+        self.memLabel_Total = QLabel("Total: 0.0 GB")
+        self.memLabel_Available = QLabel("Available: 0.0 GB")
+        self.memLabel_Used = QLabel("Used: 0.0 GB")
+
+        for lbl in [self.memLabel_Usage, self.memLabel_Total,
+                    self.memLabel_Available, self.memLabel_Used]:
+            lbl.setStyleSheet("font-size: 12px; margin-bottom: 6px;")
+            infoLayout.addWidget(lbl)
+
+        infoLayout.addStretch()
+        layout.addWidget(infoPanel, stretch=1)
+
+        return memWidget
+
+    def createDiskTab(self):
+        diskWidget = QWidget()
+        layout = QHBoxLayout(diskWidget)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(20)
+
+        # Left: Disk I/O Graph
+        self.diskPlot = pg.PlotWidget(title="Disk I/O (KB/s, Last 60s)")
+        self.diskPlot.showGrid(x=True, y=True, alpha=0.2)
+        self.diskPlot.setLabel("left", "KB/s")
+        self.diskPlot.setLabel("bottom", "Time (s)")
+        pen_read = pg.mkPen(color="#CC3300", width=2)
+        pen_write = pg.mkPen(color="#00CC99", width=2)
+        self.diskReadCurve = self.diskPlot.plot(pen=pen_read, name="Read")
+        self.diskWriteCurve = self.diskPlot.plot(pen=pen_write, name="Write")
+        layout.addWidget(self.diskPlot, stretch=2)
+
+        # Right: Disk Info
+        infoPanel = QWidget()
+        infoLayout = QVBoxLayout(infoPanel)
+        infoPanel.setFixedWidth(220)
+
+        self.diskLabel_Read = QLabel("Read: 0 KB/s")
+        self.diskLabel_Write = QLabel("Write: 0 KB/s")
+        self.diskLabel_Capacity = QLabel("Capacity: ???")
+        self.diskLabel_ActiveTime = QLabel("Active Time: ??? (N/A)")
+
+        for lbl in [self.diskLabel_Read, self.diskLabel_Write,
+                    self.diskLabel_Capacity, self.diskLabel_ActiveTime]:
+            lbl.setStyleSheet("font-size: 12px; margin-bottom: 6px;")
+            infoLayout.addWidget(lbl)
+
+        infoLayout.addStretch()
+        layout.addWidget(infoPanel, stretch=1)
+
+        return diskWidget
+
+    def createNetworkTab(self):
+        netWidget = QWidget()
+        layout = QHBoxLayout(netWidget)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(20)
+
+        # Left: Network Speed Graph
+        self.netPlot = pg.PlotWidget(title="Network (KB/s, Last 60s)")
+        self.netPlot.showGrid(x=True, y=True, alpha=0.2)
+        self.netPlot.setLabel("left", "KB/s")
+        self.netPlot.setLabel("bottom", "Time (s)")
+        pen_up = pg.mkPen(color="#0066CC", width=2)
+        pen_down = pg.mkPen(color="#CCAA00", width=2)
+        self.netUpCurve = self.netPlot.plot(pen=pen_up, name="Upload")
+        self.netDownCurve = self.netPlot.plot(pen=pen_down, name="Download")
+        layout.addWidget(self.netPlot, stretch=2)
+
+        # Right: Network Info
+        infoPanel = QWidget()
+        infoLayout = QVBoxLayout(infoPanel)
+        infoPanel.setFixedWidth(220)
+
+        self.netLabel_Up = QLabel("Upload: 0 KB/s")
+        self.netLabel_Down = QLabel("Download: 0 KB/s")
+        self.netLabel_Sent = QLabel("Total Sent: ??? MB")
+        self.netLabel_Recv = QLabel("Total Received: ??? MB")
+
+        for lbl in [self.netLabel_Up, self.netLabel_Down,
+                    self.netLabel_Sent, self.netLabel_Recv]:
+            lbl.setStyleSheet("font-size: 12px; margin-bottom: 6px;")
+            infoLayout.addWidget(lbl)
+
+        infoLayout.addStretch()
+        layout.addWidget(infoPanel, stretch=1)
+
+        return netWidget
+
+    def createGpuTab(self):
+        gpuWidget = QWidget()
+        layout = QHBoxLayout(gpuWidget)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(20)
+
+        # GPU Usage Graph (placeholder)
+        self.gpuPlot = pg.PlotWidget(title="GPU Usage (Placeholder)")
+        self.gpuPlot.showGrid(x=True, y=True, alpha=0.2)
+        self.gpuPlot.setLabel("left", "Usage (%)")
+        self.gpuPlot.setLabel("bottom", "Time (s)")
+        pen_gpu = pg.mkPen(color="#AA00FF", width=2)
+        self.gpuCurve = self.gpuPlot.plot(pen=pen_gpu, name="GPU")
+        self.gpuCurve.setFillLevel(0)
+        self.gpuCurve.setBrush(pg.mkBrush("#AA00FF20"))
+        layout.addWidget(self.gpuPlot, stretch=2)
+
+        # Right: GPU Info
+        infoPanel = QWidget()
+        infoLayout = QVBoxLayout(infoPanel)
+        infoPanel.setFixedWidth(220)
+
+        self.gpuLabel_Usage = QLabel("Usage: ???")
+        self.gpuLabel_Memory = QLabel("Memory: ???")
+        self.gpuLabel_Driver = QLabel("Driver Version: ???")
+        self.gpuLabel_Clocks = QLabel("Clocks: ???")
+
+        for lbl in [self.gpuLabel_Usage, self.gpuLabel_Memory,
+                    self.gpuLabel_Driver, self.gpuLabel_Clocks]:
+            lbl.setStyleSheet("font-size: 12px; margin-bottom: 6px;")
+            infoLayout.addWidget(lbl)
+
+        infoLayout.addStretch()
+        layout.addWidget(infoPanel, stretch=1)
+
+        return gpuWidget
