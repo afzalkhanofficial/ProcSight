@@ -425,3 +425,113 @@ class MainWindow(QMainWindow):
         layout.addWidget(infoPanel, stretch=1)
 
         return gpuWidget
+
+    ############################################################################
+    # 2.3. Data Updates (Process Table + Performance)
+    ############################################################################
+    def updateAllData(self):
+        self.updateProcessTable()
+        self.updatePerformanceCharts()
+
+    def updateProcessTable(self):
+        processes = []
+        for proc in psutil.process_iter(['pid', 'name', 'cpu_percent', 'memory_percent']):
+            try:
+                info = proc.info
+                processes.append([
+                    str(info['pid']),
+                    str(info['name']),
+                    f"{info['cpu_percent']:.1f}",
+                    f"{info['memory_percent']:.1f}"
+                ])
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                continue
+        self.processModel.updateProcesses(processes)
+
+    def updatePerformanceCharts(self):
+        # 1) CPU
+        cpu = psutil.cpu_percent()
+        self.cpuData.append(cpu)
+        if len(self.cpuData) > self.maxDataPoints:
+            self.cpuData.pop(0)
+        self.cpuCurve.setData(self.cpuData)
+        self.cpuLabel_Usage.setText(f"Usage: {cpu:.1f}%")
+
+        # CPU frequency, cores, threads
+        freq = psutil.cpu_freq()
+        if freq:
+            self.cpuLabel_Speed.setText(f"Speed: {freq.current/1000:.2f} GHz")
+        self.cpuLabel_Cores.setText(f"Cores: {psutil.cpu_count(logical=False)}")
+        self.cpuLabel_Threads.setText(f"Threads: {psutil.cpu_count(logical=True)}")
+
+        # 2) Memory
+        mem = psutil.virtual_memory()
+        mem_percent = mem.percent
+        mem_total_gb = mem.total / (1024**3)
+        mem_used_gb = (mem.total - mem.available) / (1024**3)
+        mem_avail_gb = mem.available / (1024**3)
+
+        self.memData.append(mem_percent)
+        if len(self.memData) > self.maxDataPoints:
+            self.memData.pop(0)
+        self.memCurve.setData(self.memData)
+
+        self.memLabel_Usage.setText(f"Usage: {mem_percent:.1f}%")
+        self.memLabel_Total.setText(f"Total: {mem_total_gb:.1f} GB")
+        self.memLabel_Available.setText(f"Available: {mem_avail_gb:.1f} GB")
+        self.memLabel_Used.setText(f"Used: {mem_used_gb:.1f} GB")
+
+        # 3) Network
+        currentNet = psutil.net_io_counters()
+        upSpeed = (currentNet.bytes_sent - self.lastNet.bytes_sent) / 1024.0
+        downSpeed = (currentNet.bytes_recv - self.lastNet.bytes_recv) / 1024.0
+        self.lastNet = currentNet
+
+        self.netUpData.append(upSpeed)
+        self.netDownData.append(downSpeed)
+        if len(self.netUpData) > self.maxDataPoints:
+            self.netUpData.pop(0)
+        if len(self.netDownData) > self.maxDataPoints:
+            self.netDownData.pop(0)
+        self.netUpCurve.setData(self.netUpData)
+        self.netDownCurve.setData(self.netDownData)
+
+        self.netLabel_Up.setText(f"Upload: {upSpeed:.1f} KB/s")
+        self.netLabel_Down.setText(f"Download: {downSpeed:.1f} KB/s")
+        self.netLabel_Sent.setText(f"Total Sent: {currentNet.bytes_sent/1_048_576:.1f} MB")
+        self.netLabel_Recv.setText(f"Total Received: {currentNet.bytes_recv/1_048_576:.1f} MB")
+
+        # 4) Disk
+        currentDisk = psutil.disk_io_counters()
+        readSpeed = (currentDisk.read_bytes - self.lastDisk.read_bytes) / 1024.0
+        writeSpeed = (currentDisk.write_bytes - self.lastDisk.write_bytes) / 1024.0
+        self.lastDisk = currentDisk
+
+        self.diskReadData.append(readSpeed)
+        self.diskWriteData.append(writeSpeed)
+        if len(self.diskReadData) > self.maxDataPoints:
+            self.diskReadData.pop(0)
+        if len(self.diskWriteData) > self.maxDataPoints:
+            self.diskWriteData.pop(0)
+        self.diskReadCurve.setData(self.diskReadData)
+        self.diskWriteCurve.setData(self.diskWriteData)
+
+        self.diskLabel_Read.setText(f"Read: {readSpeed:.1f} KB/s")
+        self.diskLabel_Write.setText(f"Write: {writeSpeed:.1f} KB/s")
+
+        # If you want to show capacity for a specific disk (e.g., C: on Windows)
+        try:
+            usage = psutil.disk_usage("C:\\")
+            total_gb = usage.total / (1024**3)
+            used_gb = usage.used / (1024**3)
+            self.diskLabel_Capacity.setText(f"Capacity: {used_gb:.1f}/{total_gb:.1f} GB")
+        except Exception:
+            pass
+
+        # 5) GPU (placeholder)
+        dummy_gpu = 5.0  # placeholder usage
+        self.gpuData.append(dummy_gpu)
+        if len(self.gpuData) > self.maxDataPoints:
+            self.gpuData.pop(0)
+        self.gpuCurve.setData(self.gpuData)
+        self.gpuLabel_Usage.setText(f"Usage: {dummy_gpu:.1f}%")
