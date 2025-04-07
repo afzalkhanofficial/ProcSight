@@ -673,3 +673,11 @@ class MainWindow(QMainWindow):
             height: 0px;
         }
         """
+##############################################################################
+# 3. Run the Application
+##############################################################################
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())
