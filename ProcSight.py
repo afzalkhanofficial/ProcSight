@@ -570,3 +570,106 @@ class MainWindow(QMainWindow):
     ############################################################################
     def filterChanged(self, text):
         self.proxyModel.setFilterFixedString(text)
+
+    ############################################################################
+    # 2.6. Modern Style Sheet
+    ############################################################################
+    def modernStyleSheet(self):
+        return """
+        /* Main Background */
+        QMainWindow, QWidget {
+            background-color: #242424;
+            color: #E0E0E0;
+            font-family: 'Segoe UI Variable', 'Segoe UI', sans-serif;
+            font-size: 10.5pt;
+        }
+        /* Sidebar */
+        QListWidget#Sidebar {
+            background-color: #2E2E2E;
+            border: none;
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+            margin: 0px;
+            padding: 10px;
+        }
+        QListWidget#Sidebar::item {
+            margin: 8px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        QListWidget#Sidebar::item:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+        QListWidget#Sidebar::item:selected {
+            background-color: #0078D4;
+            color: #FFFFFF;
+        }
+        /* Tab Widget */
+        QTabWidget#PerfTabs::pane {
+            border: none;
+        }
+        QTabBar::tab {
+            background-color: #2E2E2E;
+            color: #E0E0E0;
+            padding: 8px 16px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            margin-right: 2px;
+        }
+        QTabBar::tab:selected {
+            background-color: #0078D4;
+            color: #FFFFFF;
+        }
+        QTabBar::tab:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+        /* Table */
+        QTableView {
+            background-color: #2E2E2E;
+            border: 1px solid #3C3C3C;
+            border-radius: 8px;
+        }
+        QHeaderView::section {
+            background-color: #3C3C3C;
+            border: none;
+            border-radius: 0;
+            padding: 6px;
+            font-size: 9.5pt;
+        }
+        QTableView::item {
+            padding: 6px;
+        }
+        QTableView::item:selected {
+            background-color: #0078D4;
+            color: #FFFFFF;
+        }
+        /* LineEdit & Label */
+        QLineEdit {
+            background-color: #2E2E2E;
+            border: 1px solid #3C3C3C;
+            border-radius: 5px;
+            padding: 6px;
+        }
+        QLineEdit:focus {
+            border: 1px solid #0078D4;
+        }
+        /* Scrollbars */
+        QScrollBar:vertical {
+            background: #2E2E2E;
+            width: 12px;
+            margin: 16px 0 16px 0;
+        }
+        QScrollBar::handle:vertical {
+            background: #555555;
+            border-radius: 6px;
+            min-height: 20px;
+        }
+        QScrollBar::handle:vertical:hover {
+            background: #0078D4;
+        }
+        QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+            background: none;
+            border: none;
+            height: 0px;
+        }
+        """
