@@ -564,3 +564,9 @@ class MainWindow(QMainWindow):
         except Exception as e:
             QMessageBox.warning(self, "Error",
                                 f"Failed to terminate process {pid}.\nError: {e}")
+
+    ############################################################################
+    # 2.5. Filter Changed Handler
+    ############################################################################
+    def filterChanged(self, text):
+        self.proxyModel.setFilterFixedString(text)
